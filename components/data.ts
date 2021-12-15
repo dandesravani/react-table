@@ -32,3 +32,5 @@ export const data: string[][] = [
   ['Dream of the Red Chamber', 'Cao Xueqin', 'Chinese', '1791', '100 million'],
   ['The Hobbit', 'J. R. R. Tolkien', 'English', '1937', '100 million'],
 ]
+
+export const excelData = { headers, data }

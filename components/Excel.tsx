@@ -1,15 +1,21 @@
-import { Table, Th, Thead, Tr, Tbody, Td, IconButton } from '@chakra-ui/react'
-import { BiSortDown, BiSortUp, BiSortAlt2 } from 'react-icons/bi'
+import { IconButton, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import React from 'react'
+import { BiSortAlt2, BiSortDown, BiSortUp } from 'react-icons/bi'
 
 export type Sort = 'asc' | 'desc'
+
+export type Cell = { row: number; column: number }
 
 interface ExcelViewProps {
   headers: string[]
   data: string[][]
   sort?: Sort
   selectedIdx?: number
+  isEdit: boolean
+  cell?: Cell
   onSortHeader(idx: number, sort?: Sort): void
+  onDoubleClick(cell?: Cell): void
+  onSubmit(cell: Cell, cellData: string): Promise<void>
 }
 
 interface IconViewProps {
@@ -28,8 +34,12 @@ export const ExcelView: React.FC<ExcelViewProps> = ({
   headers,
   data,
   sort,
+  cell,
   selectedIdx,
+  isEdit,
   onSortHeader,
+  onDoubleClick,
+  onSubmit,
 }) => {
   return (
     <Table>
@@ -60,12 +70,44 @@ export const ExcelView: React.FC<ExcelViewProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {data.map((books, idx) => {
+        {data.map((books, rowIdx) => {
           return (
-            <Tr key={idx}>
-              {books.map((b, idx) => (
-                <Td key={idx}>{b}</Td>
-              ))}
+            <Tr key={rowIdx}>
+              {books.map((b, colIdx) => {
+                const [editText, setEditText] = React.useState(b)
+                return isEdit &&
+                  cell &&
+                  rowIdx === cell.row &&
+                  colIdx === cell.column ? (
+                  <Td key={colIdx}>
+                    <form
+                      onSubmit={async e => {
+                        e.preventDefault()
+                        await onSubmit(
+                          { row: rowIdx, column: colIdx },
+                          editText,
+                        )
+                      }}
+                    >
+                      <input
+                        type="text"
+                        value={editText}
+                        onChange={e => setEditText(e.target.value)}
+                        style={{ border: '1px solid black' }}
+                      />
+                    </form>
+                  </Td>
+                ) : (
+                  <Td
+                    key={colIdx}
+                    onDoubleClick={() =>
+                      onDoubleClick({ row: rowIdx, column: colIdx })
+                    }
+                  >
+                    {b}
+                  </Td>
+                )
+              })}
             </Tr>
           )
         })}

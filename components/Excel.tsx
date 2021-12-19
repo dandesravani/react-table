@@ -10,11 +10,35 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import { BiSortAlt2, BiSortDown, BiSortUp } from 'react-icons/bi'
-// import { range, uniqueId } from 'lodash'
+import { range } from 'lodash'
+import { excelData } from './data'
 
 export type Sort = 'asc' | 'desc'
 
 export type Cell = { row: number; column: number }
+
+interface SearchInputProps {
+  searchText: string
+  onSearchText(text: string): void
+}
+
+export const SearchInput: React.FC<SearchInputProps> = ({
+  searchText,
+  onSearchText,
+}) => {
+  return (
+    <input
+      type="search"
+      style={{
+        border: '0.5px solid black',
+        outline: 'none',
+        padding: '4px',
+      }}
+      value={searchText}
+      onChange={e => onSearchText(e.target.value)}
+    />
+  )
+}
 
 interface ExcelViewProps {
   headers: string[]
@@ -23,16 +47,20 @@ interface ExcelViewProps {
   selectedIdx?: number
   isEdit: boolean
   cell?: Cell
-  isSearch: boolean
+  show: boolean
   onSortHeader(idx: number, sort?: Sort): void
   onDoubleClick(cell?: Cell): void
-  onSearch(): void
+  onShowButton(): void
   onSubmit(cell: Cell, cellData: string): Promise<void>
+  searchText: string
+  onSearchText(text: string): void
 }
 
 interface IconViewProps {
   sort?: Sort
 }
+
+const searchInputArray = range(0, excelData.headers.length)
 
 export const IconView = ({ sort }: IconViewProps) => {
   return sort === 'asc' || sort === undefined ? (
@@ -49,23 +77,27 @@ export const ExcelView: React.FC<ExcelViewProps> = ({
   cell,
   selectedIdx,
   isEdit,
-  isSearch,
-  onSearch,
+  show,
+  onShowButton,
   onSortHeader,
   onDoubleClick,
   onSubmit,
+  searchText,
+  onSearchText,
 }) => {
+  const [editText, setEditText] = React.useState('')
+
   return (
     <>
       <Button
-        onClick={onSearch}
+        onClick={onShowButton}
         m="4"
         bg="blue.500"
         color="#fff"
         _hover={{ bg: 'blue.700' }}
         _active={{ outline: 'none', border: 'none' }}
       >
-        {isSearch ? 'Hide Search' : 'Show Search'}
+        {show ? 'Hide Search' : 'Show Search'}
       </Button>
       <Table>
         <Thead>
@@ -94,61 +126,57 @@ export const ExcelView: React.FC<ExcelViewProps> = ({
           </Tr>
         </Thead>
         <Tbody>
+          <Tr key={-1}>
+            {show &&
+              searchInputArray.map(idx => {
+                return (
+                  <Td key={idx}>
+                    <SearchInput
+                      searchText={searchText}
+                      onSearchText={onSearchText}
+                    />
+                  </Td>
+                )
+              })}
+          </Tr>
           {data.map((books, rowIdx) => {
             return (
-              <>
-                {/* {isSearch ? (
-                  <Td>
-                    {range(0, 1).map(v => (
-                      <input
-                        key={uniqueId(rowIdx.toString())}
-                        style={{ border: '1px solid black' }}
-                      />
-                    ))}
-                  </Td>
-                ) : null} */}
-                <Tr key={rowIdx}>
-                  {books.map((b, colIdx) => {
-                    const [editText, setEditText] = React.useState(b)
-
-                    return isEdit &&
-                      cell &&
-                      rowIdx === cell.row &&
-                      colIdx === cell.column ? (
-                      <>
-                        <Td key={colIdx}>
-                          <form
-                            onSubmit={async e => {
-                              e.preventDefault()
-                              await onSubmit(
-                                { row: rowIdx, column: colIdx },
-                                editText,
-                              )
-                            }}
-                          >
-                            <input
-                              type="text"
-                              value={editText}
-                              onChange={e => setEditText(e.target.value)}
-                              style={{ border: '1px solid black' }}
-                            />
-                          </form>
-                        </Td>
-                      </>
-                    ) : (
-                      <Td
-                        key={colIdx}
-                        onDoubleClick={() =>
-                          onDoubleClick({ row: rowIdx, column: colIdx })
-                        }
+              <Tr key={`r${rowIdx}`}>
+                {books.map((b, colIdx) => {
+                  return isEdit &&
+                    cell &&
+                    rowIdx === cell.row &&
+                    colIdx === cell.column ? (
+                    <Td key={colIdx}>
+                      <form
+                        onSubmit={async e => {
+                          e.preventDefault()
+                          await onSubmit(
+                            { row: rowIdx, column: colIdx },
+                            editText,
+                          )
+                        }}
                       >
-                        {b}
-                      </Td>
-                    )
-                  })}
-                </Tr>
-                )
-              </>
+                        <input
+                          type="text"
+                          value={editText}
+                          onChange={e => setEditText(e.target.value)}
+                          style={{ border: '1px solid black' }}
+                        />
+                      </form>
+                    </Td>
+                  ) : (
+                    <Td
+                      key={colIdx}
+                      onDoubleClick={() =>
+                        onDoubleClick({ row: rowIdx, column: colIdx })
+                      }
+                    >
+                      {b}
+                    </Td>
+                  )
+                })}
+              </Tr>
             )
           })}
         </Tbody>

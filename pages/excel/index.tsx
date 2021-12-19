@@ -3,6 +3,27 @@ import { Cell, ExcelView, Sort } from '../../components/Excel'
 import { excelData } from '../../components/data'
 import produce from 'immer'
 
+export const contains = (arr: string[], val: string) => {
+  let result = []
+  for (let v of arr) {
+    if (v.includes(val)) {
+      result.push(v)
+    }
+  }
+  return result
+}
+
+export const containedValues = (arr: string[][], text: string): string[][] => {
+  let result: string[][] = []
+  for (let v of arr) {
+    let con = contains(v, text)
+    if (con.length !== 0) {
+      result.push(v)
+    }
+  }
+  return result
+}
+
 const cmp = (x: any, y: any) => {
   if (x > y) {
     return 1
@@ -21,7 +42,8 @@ const ExcelPage = () => {
   const [sort, setSort] = React.useState<Sort | undefined>()
   const [cell, setCell] = React.useState<Cell | undefined>()
   const [isEdit, setIsEdit] = React.useState(false)
-  const [isSearch, setIsSearch] = React.useState(false)
+  const [show, setShow] = React.useState(true)
+  const [searchText, setSearchText] = React.useState('')
 
   React.useEffect(() => {
     if (headerIndex === undefined) {
@@ -34,7 +56,7 @@ const ExcelPage = () => {
         draft.sort((x, y) => fn(x[headerIndex], y[headerIndex]))
       }),
     )
-  }, [headerIndex, sort, cell, isEdit])
+  }, [headerIndex, sort, cell, isEdit, searchText])
 
   const handleSort = (index: number, sort: Sort | undefined) => {
     const order = index !== headerIndex || sort === 'desc' ? 'asc' : 'desc'
@@ -64,24 +86,31 @@ const ExcelPage = () => {
     setIsEdit(false)
   }
 
-  const handleSearch = () => {
-    console.log(isSearch)
-    setIsSearch(!isSearch)
+  const handleButton = () => {
+    setShow(!show)
   }
+
+  const handleSearchText = (text: string) => {
+    setSearchText(text)
+  }
+
+  const filtered = searchText ? containedValues(data, searchText) : data
 
   return (
     <ExcelView
       headers={excelData.headers}
-      data={data}
+      data={filtered}
       cell={cell}
       sort={sort}
       isEdit={isEdit}
-      isSearch={isSearch}
-      onSearch={handleSearch}
+      show={show}
+      searchText={searchText}
+      onShowButton={handleButton}
       onDoubleClick={handleDoubleClick}
       selectedIdx={headerIndex}
       onSortHeader={handleSort}
       onSubmit={handleSubmit}
+      onSearchText={handleSearchText}
     />
   )
 }

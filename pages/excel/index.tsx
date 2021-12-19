@@ -16,11 +16,12 @@ const cmp = (x: any, y: any) => {
 const revCmp = (x: any, y: any) => cmp(y, x)
 
 const ExcelPage = () => {
+  let [data, set] = React.useState<string[][]>(excelData.data)
   const [headerIndex, setHeaderIndex] = React.useState<number | undefined>()
   const [sort, setSort] = React.useState<Sort | undefined>()
   const [cell, setCell] = React.useState<Cell | undefined>()
-  let [data, set] = React.useState<string[][]>(excelData.data)
   const [isEdit, setIsEdit] = React.useState(false)
+  const [isSearch, setIsSearch] = React.useState(false)
 
   React.useEffect(() => {
     if (headerIndex === undefined) {
@@ -63,6 +64,11 @@ const ExcelPage = () => {
     setIsEdit(false)
   }
 
+  const handleSearch = () => {
+    console.log(isSearch)
+    setIsSearch(!isSearch)
+  }
+
   return (
     <ExcelView
       headers={excelData.headers}
@@ -70,6 +76,8 @@ const ExcelPage = () => {
       cell={cell}
       sort={sort}
       isEdit={isEdit}
+      isSearch={isSearch}
+      onSearch={handleSearch}
       onDoubleClick={handleDoubleClick}
       selectedIdx={headerIndex}
       onSortHeader={handleSort}

@@ -11,6 +11,7 @@ import {
 import { range } from 'lodash'
 import React from 'react'
 import { BiSortAlt2 } from 'react-icons/bi'
+import { Cell, CellValue } from './Cell'
 import { SortIcon } from './IconView'
 import { SearchInput } from './SearchInput'
 import type { SearchValue, Sort } from './types'
@@ -24,10 +25,7 @@ export type ExcelProps = Readonly<{
   onSortHeader(idx: number, sort?: Sort): void
   onShowButton(): void
   onSearchText(value: SearchValue): void
-  // cell?: Cell
-  // isEdit: boolean
-  // onDoubleClick(cell?: Cell): void
-  // onSubmit(cell: Cell, cellData: string): Promise<void>
+  onCellSubmit(values: CellValue): void
 }>
 
 export const Excel = ({
@@ -39,94 +37,73 @@ export const Excel = ({
   onShowButton,
   onSortHeader,
   onSearchText,
-}: ExcelProps) => {
-  return (
-    <>
-      <Button
-        onClick={onShowButton}
-        m="4"
-        bg="blue.500"
-        color="#fff"
-        _hover={{ bg: 'blue.700' }}
-        _active={{ outline: 'none', border: 'none' }}
-      >
-        {show ? 'Hide Search' : 'Show Search'}
-      </Button>
+  onCellSubmit,
+}: ExcelProps) => (
+  <>
+    <Button
+      onClick={onShowButton}
+      m="4"
+      bg="blue.500"
+      color="#fff"
+      _hover={{ bg: 'blue.700' }}
+      _active={{ outline: 'none', border: 'none' }}
+    >
+      {show ? 'Hide Search' : 'Show Search'}
+    </Button>
 
-      <Table>
-        <Thead>
-          <Tr>
-            {headers.map((h, idx) => {
-              return (
-                <Th
-                  key={idx}
-                  onClick={() => {
-                    onSortHeader(idx, sort)
-                  }}
-                >
-                  {h}{' '}
-                  {selectedIdx === idx ? (
-                    <SortIcon sort={sort} />
-                  ) : (
-                    <IconButton
-                      size="xs"
-                      aria-label="sortable"
-                      icon={<BiSortAlt2 />}
-                    />
-                  )}
-                </Th>
-              )
-            })}
-          </Tr>
-        </Thead>
-
-        <Tbody>
-          <Tr key={-1}>
-            {show &&
-              range(headers.length).map(idx => {
-                return (
-                  <Td key={idx}>
-                    <SearchInput index={idx} onSearchText={onSearchText} />
-                  </Td>
-                )
-              })}
-          </Tr>
-          {data.map((books, rowIdx) => {
+    <Table>
+      <Thead>
+        <Tr>
+          {headers.map((h, idx) => {
             return (
-              <Tr key={`r${rowIdx}`}>
-                {books.map((b, colIdx) => {
-                  return (
-                    // return isEdit &&
-                    //   cell &&
-                    //   rowIdx === cell.row &&
-                    //   colIdx === cell.column ? (
-                    //   <Td key={colIdx}>
-                    //     <form
-                    //       onSubmit={async e => {
-                    //         e.preventDefault()
-                    //         await onSubmit(
-                    //           { row: rowIdx, column: colIdx },
-                    //           editText,
-                    //         )
-                    //       }}
-                    //     >
-                    //       <input
-                    //         type="text"
-                    //         value={editText}
-                    //         onChange={e => setEditText(e.target.value)}
-                    //         style={{ border: '1px solid black' }}
-                    //       />
-                    //     </form>
-                    //   </Td>
-                    // ) : (
-                    <Td key={colIdx}>{b}</Td>
-                  )
-                })}
-              </Tr>
+              <Th
+                key={idx}
+                onClick={() => {
+                  onSortHeader(idx, sort)
+                }}
+              >
+                {h}{' '}
+                {selectedIdx === idx ? (
+                  <SortIcon sort={sort} />
+                ) : (
+                  <IconButton
+                    size="xs"
+                    aria-label="sortable"
+                    icon={<BiSortAlt2 />}
+                  />
+                )}
+              </Th>
             )
           })}
-        </Tbody>
-      </Table>
-    </>
-  )
-}
+        </Tr>
+      </Thead>
+
+      <Tbody>
+        <Tr key={-1}>
+          {show &&
+            range(headers.length).map(idx => {
+              return (
+                <Td key={idx}>
+                  <SearchInput index={idx} onSearchText={onSearchText} />
+                </Td>
+              )
+            })}
+        </Tr>
+        {data.map((books, rowIdx) => (
+          <Tr key={rowIdx}>
+            {books.map((b, colIdx) => (
+              <Td key={colIdx}>
+                <Cell
+                  row={rowIdx}
+                  column={colIdx}
+                  onChange={onCellSubmit}
+                  text={b}
+                />
+              </Td>
+            ))}
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  </>
+)

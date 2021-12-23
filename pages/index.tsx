@@ -1,6 +1,7 @@
 import { range } from 'lodash'
 import React from 'react'
 import { useImmer } from 'use-immer'
+import type { CellValue } from '../components/Cell'
 import { excelData } from '../components/data'
 import { Excel } from '../components/Excel'
 import type { SearchValue, Sort } from '../components/types'
@@ -11,7 +12,7 @@ const ExcelPage = () => {
   const [searches, setSearches] = useImmer(() =>
     range(excelData.headers.length).map(_ => ''),
   )
-
+  675
   const [sortIndex, setSortIndex] = React.useState<number | undefined>()
   const [sort, setSort] = React.useState<Sort | undefined>()
   const [showSearch, setShowSearch] = React.useState(true)
@@ -35,19 +36,6 @@ const ExcelPage = () => {
     setSortIndex(index)
   }
 
-  // const handleSubmit = async (cell: Cell, cellData?: string) => {
-  //   const newState = data.map((rows, rIdx) =>
-  //     rows.map((col, cIdx) => {
-  //       if (rIdx === cell.row && cIdx === cell.column) {
-  //         return cellData
-  //       }
-  //       return col
-  //     }),
-  //   )
-  //   set(newState as any)
-  //   setIsEdit(false)
-  // }
-
   const handleButton = () => {
     setShowSearch(!showSearch)
   }
@@ -63,6 +51,14 @@ const ExcelPage = () => {
 
   const filtered = allEmpty(searches) ? data : containedValues(data, searches)
 
+  const handleCellSubmit = (values: CellValue) => {
+    const { row, column, text } = values
+
+    setData(draft => {
+      draft[row]![column] = text
+    })
+  }
+
   return (
     <Excel
       headers={excelData.headers}
@@ -73,6 +69,7 @@ const ExcelPage = () => {
       sortIndex={sortIndex}
       onSortHeader={handleSort}
       onSearchText={handleSearchText}
+      onCellSubmit={handleCellSubmit}
     />
   )
 }

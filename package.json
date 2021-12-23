@@ -18,6 +18,7 @@
     "react-icons": "^4.3.1",
     "redaxios": "0.4.1",
     "swr": "1.1.1",
+    "tiny-invariant": "^1.2.0",
     "type-fest": "2.8.0",
     "use-immer": "0.6.0",
     "valtio": "1.2.7",

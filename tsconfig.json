@@ -8,11 +8,7 @@
     "importsNotUsedAsValues": "error",
     "isolatedModules": true,
     "jsx": "preserve",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -29,11 +25,10 @@
     "sourceMap": true,
     "strict": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "esnext"
+    "target": "esnext",
     // "baseUrl": "./",
     // "paths": {
     // },
-    ,
     "incremental": true
   },
   "include": [
@@ -41,9 +36,9 @@
     "safe",
     "components",
     "next.config.js",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    "index.tsx",
+    "lib/utils.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

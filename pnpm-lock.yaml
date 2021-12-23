@@ -29,6 +29,7 @@ specifiers:
   framer-motion: 5.4.5
   immer: ^9.0.7
   jotai: 1.4.7
+  lodash: ^4.17.21
   next: 12.0.7
   npm-check-updates: 12.0.3
   prettier: 2.5.1
@@ -38,6 +39,7 @@ specifiers:
   redaxios: 0.4.1
   rimraf: 3.0.2
   swr: 1.1.1
+  tiny-invariant: ^1.2.0
   type-fest: 2.8.0
   typescript: 4.5.4
   use-immer: 0.6.0
@@ -53,12 +55,14 @@ dependencies:
   framer-motion: 5.4.5_react-dom@17.0.2+react@17.0.2
   immer: 9.0.7
   jotai: 1.4.7_7c84d1c7cb6aaf1252d0fd5b00b0c916
+  lodash: 4.17.21
   next: 12.0.7_aae888dfa296766acacf1a733aa50b3a
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-icons: 4.3.1_react@17.0.2
   redaxios: 0.4.1
   swr: 1.1.1_react@17.0.2
+  tiny-invariant: 1.2.0
   type-fest: 2.8.0
   use-immer: 0.6.0_immer@9.0.7+react@17.0.2
   valtio: 1.2.7_react@17.0.2
@@ -4144,7 +4148,6 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}

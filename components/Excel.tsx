@@ -1,6 +1,8 @@
 import {
   Button,
+  HStack,
   IconButton,
+  Link,
   Table,
   Tbody,
   Td,
@@ -14,7 +16,7 @@ import { BiSortAlt2 } from 'react-icons/bi'
 import { Cell, CellValue } from './Cell'
 import { SortIcon } from './IconView'
 import { SearchInput } from './SearchInput'
-import type { SearchValue, Sort } from './types'
+import type { Format, SearchValue, Sort } from './types'
 
 export type ExcelProps = Readonly<{
   headers: string[]
@@ -26,6 +28,7 @@ export type ExcelProps = Readonly<{
   onShowButton(): void
   onSearchText(value: SearchValue): void
   onCellSubmit(values: CellValue): void
+  onDownload(format: Format, evt: React.MouseEvent<HTMLAnchorElement>): void
 }>
 
 export const Excel = ({
@@ -38,18 +41,27 @@ export const Excel = ({
   onSortHeader,
   onSearchText,
   onCellSubmit,
+  onDownload,
 }: ExcelProps) => (
   <>
-    <Button
-      onClick={onShowButton}
-      m="4"
-      bg="blue.500"
-      color="#fff"
-      _hover={{ bg: 'blue.700' }}
-      _active={{ outline: 'none', border: 'none' }}
-    >
-      {show ? 'Hide Search' : 'Show Search'}
-    </Button>
+    <HStack>
+      <Button
+        onClick={onShowButton}
+        m="4"
+        bg="blue.500"
+        color="#fff"
+        _hover={{ bg: 'blue.700' }}
+        _active={{ outline: 'none', border: 'none' }}
+      >
+        {show ? 'Hide Search' : 'Show Search'}
+      </Button>
+      <Link href="data.json" onClick={evt => onDownload('json', evt)}>
+        Export JSON
+      </Link>
+      <Link href="data.csv" onClick={evt => onDownload('csv', evt)}>
+        Export CSV
+      </Link>
+    </HStack>
 
     <Table>
       <Thead>

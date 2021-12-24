@@ -4,15 +4,15 @@ import { useImmer } from 'use-immer'
 import type { CellValue } from '../components/Cell'
 import { excelData } from '../components/data'
 import { Excel } from '../components/Excel'
-import type { SearchValue, Sort } from '../components/types'
-import { allEmpty, cmp, containedValues, revCmp } from '../lib/utils'
+import type { Format, SearchValue, Sort } from '../components/types'
+import { allEmpty, cmp, containedValues, revCmp, toCSV } from '../lib/utils'
 
 const ExcelPage = () => {
   let [data, setData] = useImmer<string[][]>(excelData.data)
   const [searches, setSearches] = useImmer(() =>
     range(excelData.headers.length).map(_ => ''),
   )
-  675
+
   const [sortIndex, setSortIndex] = React.useState<number | undefined>()
   const [sort, setSort] = React.useState<Sort | undefined>()
   const [showSearch, setShowSearch] = React.useState(true)
@@ -59,6 +59,18 @@ const ExcelPage = () => {
     })
   }
 
+  const handleDownload = (
+    format: Format,
+    evt: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    const contents =
+      format === 'json' ? JSON.stringify(data, null, ' ') : toCSV(data)
+
+    const target = evt.target as any
+    target.href = URL.createObjectURL(new Blob([contents], { type: format }))
+    target.download = 'data.' + format
+  }
+
   return (
     <Excel
       headers={excelData.headers}
@@ -70,6 +82,7 @@ const ExcelPage = () => {
       onSortHeader={handleSort}
       onSearchText={handleSearchText}
       onCellSubmit={handleCellSubmit}
+      onDownload={handleDownload}
     />
   )
 }

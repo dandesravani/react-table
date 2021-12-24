@@ -1,4 +1,5 @@
 import invariant from 'tiny-invariant'
+import { excelData } from '../components/data'
 
 export const allEmpty = (arr: string[]): boolean => arr.every(v => v === '')
 
@@ -40,3 +41,13 @@ export const cmp = <T>(x: T, y: T): CmpResult => {
 }
 
 export const revCmp = <T>(x: T, y: T): CmpResult => cmp(y, x)
+
+export const toCSV = (arr: string[][]) => {
+  let result = []
+  for (let v of arr) {
+    result.push(v)
+  }
+  return result.join('\n')
+}
+
+console.log(toCSV(excelData.data))

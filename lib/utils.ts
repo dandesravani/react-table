@@ -49,5 +49,3 @@ export const toCSV = (arr: string[][]) => {
   }
   return result.join('\n')
 }
-
-console.log(toCSV(excelData.data))

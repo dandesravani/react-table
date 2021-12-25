@@ -4,11 +4,15 @@ import { useImmer } from 'use-immer'
 import type { CellValue } from '../components/Cell'
 import { excelData } from '../components/data'
 import { Excel } from '../components/Excel'
-import type { Format, SearchValue, Sort } from '../components/types'
+import { ExcelData, Format, SearchValue, Sort } from '../components/types'
 import { allEmpty, cmp, containedValues, revCmp, toCSV } from '../lib/utils'
 
-const ExcelPage = () => {
-  let [data, setData] = useImmer<string[][]>(excelData.data)
+interface ExcelPageProps {
+  data: string[][]
+}
+
+const ExcelPage = (props: ExcelPageProps) => {
+  let [data, setData] = useImmer<string[][]>(props.data)
   const [searches, setSearches] = useImmer(() =>
     range(excelData.headers.length).map(_ => ''),
   )
@@ -87,4 +91,29 @@ const ExcelPage = () => {
   )
 }
 
-export default ExcelPage
+export default function () {
+  const [excelData, setExcelData] = React.useState<string[][] | undefined>()
+  const [error, setError] = React.useState()
+
+  React.useEffect(() => {
+    fetch('/data.json')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('unable to fetch excel data')
+        }
+
+        return res.json()
+      })
+      .then(data => setExcelData(ExcelData.parse(data)))
+      .catch(err => setError(err))
+  }, [])
+
+  if (error) {
+    return <div>{JSON.stringify(error, null, 2)}</div>
+  }
+  if (!excelData) {
+    return <h1>loading</h1>
+  }
+
+  return <ExcelPage data={excelData} />
+}

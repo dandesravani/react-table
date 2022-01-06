@@ -1,5 +1,4 @@
 import invariant from 'tiny-invariant'
-import { excelData } from '../components/data'
 
 export const allEmpty = (arr: string[]): boolean => arr.every(v => v === '')
 
